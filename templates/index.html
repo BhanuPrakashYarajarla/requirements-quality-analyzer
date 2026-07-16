@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requirement Analysis</title>
+    <meta name="description"
+        content="Intelligent AI-powered software requirement analysis with explainable classifications, quality scoring, and agile insights.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ─── Design Tokens ─── */
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.72);
+            --bg-glass-strong: rgba(255, 255, 255, 0.88);
+            --border-glass: rgba(255, 255, 255, 0.6);
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #a0aec0;
+            --accent-start: #667eea;
+            --accent-end: #764ba2;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient-hover: linear-gradient(135deg, #5a6fd6 0%, #6a4292 100%);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --warning: #f59e0b;
+            --neutral: #94a3b8;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.06) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Layout ─── */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.6em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.05em;
+            font-weight: 400;
+        }
+
+        /* ─── Input Section ─── */
+        .input-section {
+            background: var(--bg-glass-strong);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-glass);
+            padding: 32px;
+            margin-bottom: 48px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        /* Tab Toggle */
+        .input-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .input-tab {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.88em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .input-tab.active {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-tab:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Input Panes */
+        .input-pane {
+            display: none;
+        }
+
+        .input-pane.active {
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 130px;
+            padding: 16px 18px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid rgba(0, 0, 0, 0.08);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition-fast);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-start);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+        }
+
+        /* File Upload Zone */
+        .upload-zone {
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border-radius: var(--radius-md);
+            padding: 48px 24px;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.03);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--accent-start);
+            background: rgba(102, 126, 234, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .upload-zone-icon {
+            font-size: 2.2em;
+            color: var(--accent-start);
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .upload-zone h4 {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .upload-zone p {
+            font-size: 0.82em;
+            color: var(--text-muted);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-selected-info {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            margin-top: 14px;
+            background: var(--success-bg);
+            border-radius: var(--radius-sm);
+            font-size: 0.88em;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .file-selected-info.show {
+            display: flex;
+        }
+
+        .file-selected-info .remove-file {
+            margin-left: auto;
+            cursor: pointer;
+            color: var(--danger);
+            font-size: 1em;
+            background: none;
+            border: none;
+            padding: 2px 6px;
+        }
+
+        /* Submit Button */
+        .btn-analyze {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+            margin: 24px auto 0;
+            padding: 14px 32px;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-analyze:active {
+            transform: translateY(0);
+        }
+
+        .btn-wrapper {
+            text-align: center;
+        }
+
+        /* ─── Results ─── */
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .results-header h2 {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .results-header .count-badge {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 0.78em;
+            font-weight: 600;
+        }
+
+        /* Accordion for batch results */
+        .result-accordion {
+            margin-bottom: 16px;
+            animation: fadeInUp 0.5s ease-out both;
+        }
+
+        .result-accordion:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .result-accordion:nth-child(3) {
+            animation-delay: 0.1s;
+        }
+
+        .result-accordion:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+
+        .result-accordion:nth-child(5) {
+            animation-delay: 0.2s;
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 22px;
+            background: var(--bg-glass-strong);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .accordion-trigger:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .accordion-trigger.open {
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            border-bottom-color: transparent;
+        }
+
+        .accordion-trigger .req-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 0.76em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .accordion-trigger .req-text {
+            flex: 1;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .accordion-trigger .req-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.74em;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .badge-functional {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-non-functional {
+            background: rgba(118, 75, 162, 0.1);
+            color: var(--accent-end);
+        }
+
+        .accordion-trigger .chevron {
+            color: var(--text-muted);
+            transition: transform var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        .accordion-trigger.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .accordion-body {
+            display: none;
+            padding: 24px;
+            background: var(--bg-glass-strong);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+        }
+
+        .accordion-body.open {
+            display: block;
+        }
+
+        /* ─── Result Cards Grid ─── */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-header .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+
+        .icon-robot {
+            background: rgba(255, 138, 0, 0.1);
+            color: #ff8a00;
+        }
+
+        .icon-brain {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00b4d8;
+        }
+
+        .icon-gauge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .icon-tasks {
+            background: rgba(229, 46, 113, 0.1);
+            color: #e52e71;
+        }
+
+        .card-header h3 {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Classification card */
+        .classification-display {
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+
+        .classification-display p {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .classification-badge {
+            display: inline-block;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .classification-badge.functional {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1.5px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .classification-badge.non-functional {
+            background: rgba(118, 75, 162, 0.1);
+            color: var(--accent-end);
+            border: 1.5px solid rgba(118, 75, 162, 0.2);
+        }
+
+        /* XAI card */
+        .xai-card {
+            grid-column: span 2;
+        }
+
+        .summary-text {
+            font-style: italic;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            background: rgba(245, 158, 11, 0.06);
+            padding: 16px 18px;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--warning);
+        }
+
+        .xai-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .xai-col h5 {
+            font-size: 0.72em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pos-col h5 {
+            color: var(--success);
+        }
+
+        .neg-col h5 {
+            color: var(--danger);
+        }
+
+        .neu-col h5 {
+            color: var(--neutral);
+        }
+
+        .xai-col ul {
+            list-style: none;
+            padding: 0;
+            font-size: 0.82em;
+        }
+
+        .xai-col li {
+            background: rgba(0, 0, 0, 0.03);
+            margin-bottom: 5px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+        }
+
+        /* Key-Value List */
+        .key-value-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .key-value-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9em;
+        }
+
+        .key-value-list li:last-child {
+            border-bottom: none;
+        }
+
+        .key-value-list .label {
+            color: var(--text-secondary);
+        }
+
+        .key-value-list .value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Explanation text */
+        .score-explanation {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .invest-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .invest-item:last-child {
+            border-bottom: none;
+        }
+
+        .invest-item-header {
+            flex-shrink: 0;
+        }
+
+        .invest-reason {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .story-reason {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 4px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--accent-start);
+        }
+
+        /* Badges */
+        .text-success {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .text-danger {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .badge {
+            font-size: 0.78em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .invest-section {
+            margin-top: 16px;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+        }
+
+        .invest-section small {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            font-size: 0.78em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .invest-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        /* ─── Loader ─── */
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(240, 244, 248, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(102, 126, 234, 0.15);
+            border-top-color: var(--accent-start);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        .loader-overlay p {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── Animations ─── */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 24px 16px 40px;
+            }
+
+            .header h1 {
+                font-size: 1.9em;
+            }
+
+            .input-section {
+                padding: 20px;
+            }
+
+            .xai-card {
+                grid-column: span 1;
+            }
+
+            .xai-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .accordion-trigger .req-text {
+                max-width: 160px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+        <!-- ─── Header ─── -->
+        <div class="header">
+            <div class="header-icon"><i class="fas fa-microscope"></i></div>
+            <h1>Requirement Analysis</h1>
+            <p>AI-Powered Classification, Quality Scoring &amp; Explainability</p>
+        </div>
+
+        <!-- ─── Input Section ─── -->
+        <div class="input-section">
+            <form method="POST" enctype="multipart/form-data" id="analysisForm">
+                <!-- Tabs -->
+                <div class="input-tabs">
+                    <button type="button" class="input-tab active" data-target="manual-pane">
+                        <i class="fas fa-keyboard" style="margin-right:5px;"></i> Type Manually
+                    </button>
+                    <button type="button" class="input-tab" data-target="upload-pane">
+                        <i class="fas fa-file-upload" style="margin-right:5px;"></i> Upload File
+                    </button>
+                </div>
+
+                <!-- Manual Input Pane -->
+                <div class="input-pane active" id="manual-pane">
+                    <textarea name="requirement"
+                        placeholder="Paste your software requirement or user story here...&#10;&#10;e.g., 'As a user, I want to be able to login with my thumbprint so that I can access the app quickly.'">{% if results and results|length == 1 %}{{ results[0].text }}{% endif %}</textarea>
+                </div>
+
+                <!-- Upload Pane -->
+                <div class="input-pane" id="upload-pane">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <h4>Drop your file here or click to browse</h4>
+                        <p>Supports <strong>.txt</strong> (one requirement per line) and <strong>.csv</strong> (first
+                            column)</p>
+                        <input type="file" name="req_file" id="reqFileInput" accept=".txt,.csv">
+                    </div>
+                    <div class="file-selected-info" id="fileInfo">
+                        <i class="fas fa-file-alt"></i>
+                        <span id="fileName"></span>
+                        <button type="button" class="remove-file" id="removeFile"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+
+                <div class="btn-wrapper">
+                    <button type="submit" class="btn-analyze">
+                        Analyze <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ─── Results ─── -->
+        {% if results and results|length > 0 %}
+        <div class="results-section">
+            <div class="results-header">
+                <h2><i class="fas fa-chart-bar" style="margin-right:8px; opacity:0.6;"></i>Results</h2>
+                <span class="count-badge">{{ results|length }} requirement{{ 's' if results|length > 1 else '' }}</span>
+            </div>
+
+            {% if results and results|length == 1 %}
+            <!-- Single result — show directly -->
+            {% set r = results[0] %}
+            <div class="results-grid" style="animation: fadeInUp 0.5s ease-out;">
+                <!-- Classification -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon-circle icon-robot"><i class="fas fa-robot"></i></div>
+                        <h3>Classification</h3>
+                    </div>
+                    <div class="classification-display">
+                        <p>The model identified this as:</p>
+                        <div
+                            class="classification-badge {{ 'functional' if 'Functional' == r.label[:10] else 'non-functional' }}">
+                            {{ r.label }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XAI -->
+                <div class="card xai-card">
+                    <div class="card-header">
+                        <div class="icon-circle icon-brain"><i class="fas fa-brain"></i></div>
+                        <h3>Why This Decision?</h3>
+                    </div>
+                    <div class="summary-text">"{{ r.explanation.summary }}"</div>
+                    <div class="xai-columns">
+                        <div class="xai-col pos-col">
+                            <h5><i class="fas fa-plus-circle"></i> Supports</h5>
+                            <ul>
+                                {% for item in r.explanation.positive %}
+                                <li>{{ item|replace("'", "")|replace("Decisive:", "") }}</li>
+                                {% else %}
+                                <li><small>No strong supporters</small></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="xai-col neg-col">
+                            <h5><i class="fas fa-minus-circle"></i> Opposes</h5>
+                            <ul>
+                                {% for item in r.explanation.negative %}
+                                <li>{{ item|replace("'", "") }}</li>
+                                {% else %}
+                                <li><small>No opposing evidence</small></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="xai-col neu-col">
+                            <h5><i class="fas fa-circle"></i> Neutral</h5>
+                            <ul>
+                                {% for item in r.explanation.neutral %}
+                                <li>{{ item|replace("'", "")|truncate(20, True) }}</li>
+                                {% else %}
+                                <li><small>—</small></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RQI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon-circle icon-gauge"><i class="fas fa-tachometer-alt"></i></div>
+                        <h3>Quality Index (RQI)</h3>
+                    </div>
+                    <ul class="key-value-list">
+                        {% for key, value in r.rqi.scores.items() %}
+                        <li>
+                            <div>
+                                <span class="label">{{ key }}</span>
+                                {% if key in r.rqi.explanations %}
+                                <div class="score-explanation">{{ r.rqi.explanations[key] }}</div>
+                                {% endif %}
+                            </div>
+                            <span class="value">{{ value }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Agile -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon-circle icon-tasks"><i class="fas fa-tasks"></i></div>
+                        <h3>Agile Analysis</h3>
+                    </div>
+                    <ul class="key-value-list">
+                        <li>
+                            <div>
+                                <span class="label">Is User Story?</span>
+                                <div class="score-explanation">{{ r.agile["Story Reason"] }}</div>
+                            </div>
+                            <span class="{{ 'text-success' if r.agile['Is User Story'] else 'text-danger' }}">
+                                {{ 'Yes' if r.agile["Is User Story"] else 'No' }}
+                            </span>
+                        </li>
+                        <li>
+                            <span class="label">INVEST Score</span>
+                            <span class="value">{{ r.agile["INVEST Score"] }}</span>
+                        </li>
+                    </ul>
+                    <div class="invest-section">
+                        <small>INVEST Criteria</small>
+                        {% for key, value in r.agile["INVEST"].items() %}
+                        <div class="invest-item">
+                            <div class="invest-item-header">
+                                <span class="badge {{ 'badge-success' if value else 'badge-danger' }}">{{ key }}</span>
+                            </div>
+                            {% if key in r.agile["INVEST Reasons"] %}
+                            <span class="invest-reason">{{ r.agile["INVEST Reasons"][key] }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- Batch results — accordion -->
+            {% for r in results %}
+            <div class="result-accordion">
+                <button type="button" class="accordion-trigger {{ 'open' if loop.first else '' }}"
+                    onclick="toggleAccordion(this)">
+                    <span class="req-number">{{ loop.index }}</span>
+                    <span class="req-text" title="{{ r.text }}">{{ r.text }}</span>
+                    <span
+                        class="req-badge {{ 'badge-functional' if 'Functional' == r.label[:10] else 'badge-non-functional' }}">
+                        {{ r.label }}
+                    </span>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="accordion-body {{ 'open' if loop.first else '' }}">
+                    <div class="results-grid">
+                        <!-- Classification -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="icon-circle icon-robot"><i class="fas fa-robot"></i></div>
+                                <h3>Classification</h3>
+                            </div>
+                            <div class="classification-display">
+                                <p>The model identified this as:</p>
+                                <div
+                                    class="classification-badge {{ 'functional' if 'Functional' == r.label[:10] else 'non-functional' }}">
+                                    {{ r.label }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- XAI -->
+                        <div class="card xai-card">
+                            <div class="card-header">
+                                <div class="icon-circle icon-brain"><i class="fas fa-brain"></i></div>
+                                <h3>Why This Decision?</h3>
+                            </div>
+                            <div class="summary-text">"{{ r.explanation.summary }}"</div>
+                            <div class="xai-columns">
+                                <div class="xai-col pos-col">
+                                    <h5><i class="fas fa-plus-circle"></i> Supports</h5>
+                                    <ul>
+                                        {% for item in r.explanation.positive %}
+                                        <li>{{ item|replace("'", "")|replace("Decisive:", "") }}</li>
+                                        {% else %}
+                                        <li><small>No strong supporters</small></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="xai-col neg-col">
+                                    <h5><i class="fas fa-minus-circle"></i> Opposes</h5>
+                                    <ul>
+                                        {% for item in r.explanation.negative %}
+                                        <li>{{ item|replace("'", "") }}</li>
+                                        {% else %}
+                                        <li><small>No opposing evidence</small></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="xai-col neu-col">
+                                    <h5><i class="fas fa-circle"></i> Neutral</h5>
+                                    <ul>
+                                        {% for item in r.explanation.neutral %}
+                                        <li>{{ item|replace("'", "")|truncate(20, True) }}</li>
+                                        {% else %}
+                                        <li><small>—</small></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RQI -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="icon-circle icon-gauge"><i class="fas fa-tachometer-alt"></i></div>
+                                <h3>Quality Index (RQI)</h3>
+                            </div>
+                            <ul class="key-value-list">
+                                {% for key, value in r.rqi.scores.items() %}
+                                <li>
+                                    <div>
+                                        <span class="label">{{ key }}</span>
+                                        {% if key in r.rqi.explanations %}
+                                        <div class="score-explanation">{{ r.rqi.explanations[key] }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <span class="value">{{ value }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Agile -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="icon-circle icon-tasks"><i class="fas fa-tasks"></i></div>
+                                <h3>Agile Analysis</h3>
+                            </div>
+                            <ul class="key-value-list">
+                                <li>
+                                    <div>
+                                        <span class="label">Is User Story?</span>
+                                        <div class="score-explanation">{{ r.agile["Story Reason"] }}</div>
+                                    </div>
+                                    <span class="{{ 'text-success' if r.agile['Is User Story'] else 'text-danger' }}">
+                                        {{ 'Yes' if r.agile["Is User Story"] else 'No' }}
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="label">INVEST Score</span>
+                                    <span class="value">{{ r.agile["INVEST Score"] }}</span>
+                                </li>
+                            </ul>
+                            <div class="invest-section">
+                                <small>INVEST Criteria</small>
+                                {% for key, value in r.agile["INVEST"].items() %}
+                                <div class="invest-item">
+                                    <div class="invest-item-header">
+                                        <span class="badge {{ 'badge-success' if value else 'badge-danger' }}">{{ key
+                                            }}</span>
+                                    </div>
+                                    {% if key in r.agile["INVEST Reasons"] %}
+                                    <span class="invest-reason">{{ r.agile["INVEST Reasons"][key] }}</span>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Loader -->
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <p>Analyzing requirements…</p>
+    </div>
+
+    <script>
+        // ─── Tab switching ───
+        document.querySelectorAll('.input-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.input-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.input-pane').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+            });
+        });
+
+        // ─── File upload handling ───
+        const fileInput = document.getElementById('reqFileInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameSpan = document.getElementById('fileName');
+        const removeBtn = document.getElementById('removeFile');
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                fileNameSpan.textContent = fileInput.files[0].name;
+                fileInfo.classList.add('show');
+            }
+        });
+
+        removeBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            fileInfo.classList.remove('show');
+        });
+
+        // Drag & drop visual feedback
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        // ─── Accordion toggle ───
+        function toggleAccordion(trigger) {
+            const body = trigger.nextElementSibling;
+            const isOpen = trigger.classList.contains('open');
+            trigger.classList.toggle('open');
+            body.classList.toggle('open');
+        }
+
+        // ─── Show loader on submit ───
+        document.getElementById('analysisForm').addEventListener('submit', function () {
+            document.getElementById('loader').style.display = 'flex';
+        });
+    </script>
+</body>
+
+</html>
