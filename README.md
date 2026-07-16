@@ -1,4 +1,4 @@
-# Requirements Quality Analyzer
+# AI-Assisted Classification & Quality Assessment of Software Requirements
 
 > An ML-powered web application that classifies software requirements, evaluates their quality using a custom scoring index, and provides explainable AI insights — all through a clean Flask interface.
 
@@ -153,8 +153,4 @@ As a registered user, I want to reset my password so that I can regain access to
 - ✅ **INVEST:** 4/5 (not Testable — no *shall/must/if/when*)
 - 🔍 **LIME:** *"password"*, *"reset"*, *"access"* strongly support Functional classification
 
----
 
-## License
-
-Academic course project — Software Engineering (Semester 6).
